@@ -123,6 +123,29 @@ command."
   (simple-mpc-call-mpc nil (list "load" playlist-name))
   (simple-mpc-maybe-refresh-playlist))
 
+(defvar simple-mpc-podcast-episode-count 5
+  "Amount of episodes of a podcast to load to playlist.")
+
+(defun simple-mpc-load-podcast-episodes (podcast-name)
+  "Load episodes of PODCAST-NAME."
+  (let ((episodes (seq-take (simple-mpc-call-mpc-strings `("ls" ,podcast-name))
+                            simple-mpc-podcast-episode-count)))
+    (mapcar (lambda (x)
+              (simple-mpc-call-mpc nil (list "add" x))) episodes)))
+
+(defun simple-mpc-load-podcast (podcast-name)
+  "Load a MPD PODCAST-NAME.
+
+Provides completion for playlists through the ls command."
+  (interactive
+   (list
+    (completing-read "Playlist: " (simple-mpc-call-mpc-strings '("ls" "Podcasts" )))))
+  (message "%s %s" "Loading podcast" podcast-name)
+  (when (y-or-n-p "Clear Playlist? ")
+    (simple-mpc-clear-current-playlist))
+  (simple-mpc-load-podcast-episodes podcast-name)
+  (simple-mpc-maybe-refresh-playlist))
+
 ;;;###autoload
 (defun simple-mpc (&optional ignore-auto noconfirm)
   "Start simple-mpc.
