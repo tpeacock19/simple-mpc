@@ -40,6 +40,8 @@
   :lighter " simple-mpc-current-playlist"
   :keymap (let ((map (make-sparse-keymap)))
             (define-key map (kbd "<return>") 'simple-mpc-play-current-line)
+            (define-key map "\C-n" #'simple-mpc-move-song-forward-in-queue)
+            (define-key map "\C-p" #'simple-mpc-move-song-backward-in-queue)
             (define-key map "d" 'simple-mpc-delete)
             (define-key map "q" 'simple-mpc-current-playlist-quit)
             map)

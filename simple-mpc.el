@@ -66,6 +66,24 @@
   (simple-mpc-call-mpc nil "prev")
   (simple-mpc-maybe-refresh-playlist t))
 
+(defun simple-mpc-move-song-forward-in-queue (&optional backward)
+  "Move the selected song forward in the queue.
+
+If BACKWARD move accordingly."
+  (interactive)
+  (let* ((old-pos (line-number-at-pos))
+         (new-pos (number-to-string (+ old-pos (if backward -1 1)))))
+    (setq old-pos (number-to-string old-pos))
+    (simple-mpc-call-mpc nil `("move" ,old-pos ,new-pos))
+    (simple-mpc-view-current-playlist nil nil t)
+    (goto-line (string-to-number new-pos))
+    (recenter nil t)))
+
+(defun simple-mpc-move-song-backward-in-queue ()
+"Move the selected song backward in the queue."
+  (interactive)
+  (funcall #'simple-mpc-move-song-forward-in-queue t))
+
 (defun simple-mpc-seek-forward ()
   "Does a relative seek forward by `simple-mpc-seek-time-in-s' seconds."
   (interactive)
