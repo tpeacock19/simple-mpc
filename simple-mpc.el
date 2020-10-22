@@ -129,17 +129,25 @@ If BACKWARD move accordingly."
   (message "%s" "Shuffled current playlist.")
   (simple-mpc-maybe-refresh-playlist))
 
-(defun simple-mpc-load-playlist (playlist-name)
+(defun simple-mpc-load-playlist (&optional playlist-name)
   "Load a MPD PLAYLIST-NAME.
 
 Provides completion for playlists through the lsplaylists
 command."
-  (interactive
-   (list
-    (completing-read "Playlist: " (simple-mpc-call-mpc-strings "lsplaylists"))))
-  (message "%s %s" "Loading playlist" playlist-name)
-  (simple-mpc-call-mpc nil (list "load" playlist-name))
-  (simple-mpc-maybe-refresh-playlist))
+  (interactive)
+  (let ((playlist-name (or playlist-name
+                           (completing-read "Playlist: " (simple-mpc-call-mpc-strings "lsplaylists")))))
+    (message "%s %s" "Loading playlist" playlist-name)
+    (simple-mpc-call-mpc nil (list "load" playlist-name))
+    (simple-mpc-maybe-refresh-playlist)))
+
+(defun simple-mpc-save-queue (&optional playlist-name)
+  "Save a MPD queue as PLAYLIST-NAME."
+  (interactive)
+  (let ((playlist-name (or playlist-name
+                           (read-from-minibuffer "Name: "))))
+    (message "%s %s" "Saving playlist" playlist-name)
+    (simple-mpc-call-mpc nil (list "save" playlist-name))))
 
 (defvar simple-mpc-podcast-episode-count 5
   "Amount of episodes of a podcast to load to playlist.")
@@ -151,18 +159,18 @@ command."
     (mapcar (lambda (x)
               (simple-mpc-call-mpc nil (list "add" x))) episodes)))
 
-(defun simple-mpc-load-podcast (podcast-name)
+(defun simple-mpc-load-podcast (&optional podcast-name)
   "Load a MPD PODCAST-NAME.
 
 Provides completion for playlists through the ls command."
-  (interactive
-   (list
-    (completing-read "Playlist: " (simple-mpc-call-mpc-strings '("ls" "Podcasts" )))))
-  (message "%s %s" "Loading podcast" podcast-name)
-  (when (y-or-n-p "Clear Playlist? ")
-    (simple-mpc-clear-current-playlist))
-  (simple-mpc-load-podcast-episodes podcast-name)
-  (simple-mpc-maybe-refresh-playlist))
+  (interactive)
+  (let ((playlist-name (or podcast-name
+                           (completing-read "Playlist: " (simple-mpc-call-mpc-strings '("ls" "Podcasts" ))))))
+    (message "%s %s" "Loading podcast" podcast-name)
+    (when (y-or-n-p "Clear Playlist? ")
+      (simple-mpc-clear-current-playlist))
+    (simple-mpc-load-podcast-episodes podcast-name)
+    (simple-mpc-maybe-refresh-playlist)))
 
 ;;;###autoload
 (defun simple-mpc (&optional ignore-auto noconfirm)
