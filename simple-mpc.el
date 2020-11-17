@@ -164,8 +164,8 @@ command."
 
 Provides completion for playlists through the ls command."
   (interactive)
-  (let ((playlist-name (or podcast-name
-                           (completing-read "Playlist: " (simple-mpc-call-mpc-strings '("ls" "Podcasts" ))))))
+  (let ((podcast-name (or podcast-name
+                          (completing-read "Playlist: " (simple-mpc-call-mpc-strings '("ls" "Podcasts" ))))))
     (message "%s %s" "Loading podcast" podcast-name)
     (when (y-or-n-p "Clear Playlist? ")
       (simple-mpc-clear-current-playlist))
